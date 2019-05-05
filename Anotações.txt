@@ -1,0 +1,3 @@
+A tela de login não apresentará nenhum tipo de link com cadastramento de novos usuários.
+Para definir quem quem total acesso ao sistema, foi gerado um registro no banco chamado PapelUsuario com registros de administrador e aluno. O usuário que for vinculado a um papel de administrador terá acesso total ao sistema, inclusive poderá adicionar novos usuários administradores ou alunos. Já o aluno terá acesso limitado ao sistema, focando apenas em suas rotinas de trabalho.
+Foi adicionado no banco um usuário padrão que será responsável por logar e criar os novos usuários para o sistema do NPJ.
