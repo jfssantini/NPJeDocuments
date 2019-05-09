@@ -67,7 +67,8 @@ CREATE TABLE Responsavel(
 
 CREATE TABLE AlunoEspecialidade(
 	Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	IdAluno BIGINT NOT NULL,
+	IdAluno BIGINT,
+	IdUsuario BIGINT NOT NULL,
 	IdEspecialidade INT NOT NULL
 );
 
@@ -107,7 +108,9 @@ CREATE TABLE Cliente(
 CREATE TABLE Disponibilidade(
 	Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	IdAlunoEspecialidade BIGINT NOT NULL,
-	DataHora TIMESTAMP NOT NULL
+	IdDiaSemana INT NOT NULL
+	HorarioInicio TIME NOT NULL,
+	HorarioFim TIME NOT NULL
 );
 
 CREATE TABLE Endereco(
@@ -150,6 +153,10 @@ FOREIGN KEY (IdResponsavel) REFERENCES Responsavel (Id);
 ALTER TABLE AlunoEspecialidade 
 ADD CONSTRAINT FK_AlunoEspecialidadeAluno 
 FOREIGN KEY (IdAluno) REFERENCES Aluno (Id);
+
+ALTER TABLE AlunoEspecialidade 
+ADD CONSTRAINT FK_AlunoEspecialidadeUsuario 
+FOREIGN KEY (IdUsuario) REFERENCES Usuario (Id);
 
 ALTER TABLE AlunoEspecialidade 
 ADD CONSTRAINT FK_AlunoEspecialidadeEspecialidade 
