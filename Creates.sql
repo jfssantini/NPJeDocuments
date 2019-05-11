@@ -37,7 +37,7 @@ CREATE TABLE Aluno(
 	CPF VARCHAR(14),
 	IdUsuario BIGINT NOT NULL,
 	IdResponsavel BIGINT,
-	Ativo BIT NOT NULL
+	Ativo BOOL NOT NULL
 );
 
 
@@ -62,20 +62,25 @@ CREATE TABLE Responsavel(
 	CPF VARCHAR(14),
 	IdUsuario BIGINT NOT NULL,
 	IdTipoResponsavel INT NOT NULL,
-	Ativo BIT NOT NULL
+	Ativo BOOL NOT NULL
 );
 
 CREATE TABLE AlunoEspecialidade(
 	Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	IdAluno BIGINT,
 	IdUsuario BIGINT NOT NULL,
-	IdEspecialidade INT NOT NULL
+	IdEspecialidade INT NOT NULL,
+	Temporario BOOL NOT NULL,
+	Esconder BOOL NOT NULL
 );
 
 CREATE TABLE AlunoGrupo(
 	Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	IdAluno BIGINT NOT NULL,
-	IdGrupo BIGINT NOT NULL
+	IdAluno BIGINT,
+	IdGrupo BIGINT NOT NULL,
+	IdUsuario BIGINT NOT NULL,
+	Temporario BOOL NOT NULL,
+	Esconder BOOL NOT NULL
 );
 
 
@@ -88,7 +93,7 @@ CREATE TABLE Atendimento(
 	IdUsuarioResponsavel BIGINT NOT NULL,
 	IdEtapaAtendimentoAtual INT,
 	IdTipoAtendimento INT,
-	Concluido BIT NOT NULL
+	Concluido BOOL NOT NULL
 );
 
 CREATE TABLE Cliente(
@@ -200,7 +205,7 @@ FOREIGN KEY (IdEndereco) REFERENCES Endereco (Id);
 
 ALTER TABLE Disponibilidade 
 ADD CONSTRAINT FK_DisponibilidadeAlunoEspecialidade
-FOREIGN KEY (IdAlunoEspecialidade) REFERENCES AlunoEspecialidade (Id);
+FOREIGN KEY (IdAlunoEspecialidade) REFERENCES AlunoEspecialidade (Id) ON DELETE CASCADE;
 
 ALTER TABLE Grupo 
 ADD CONSTRAINT FK_GrupoEspecialidade
