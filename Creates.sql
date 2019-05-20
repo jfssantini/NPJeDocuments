@@ -4,7 +4,8 @@ CREATE TABLE Usuario(
 	Senha VARCHAR(1000) NOT NULL,
 	UserKey VARCHAR(200),
 	IdPapelUsuario INT NOT NULL,
-	IdStatusUsuario INT NOT NULL
+	IdStatusUsuario INT NOT NULL,
+	Excluido BOOL NOT NULL
 );
 
 CREATE TABLE PapelUsuario(--ENUM--
@@ -29,7 +30,9 @@ CREATE TABLE Responsavel(
 	CPF VARCHAR(14),
 	IdUsuario BIGINT NOT NULL,
 	IdTipoResponsavel INT NOT NULL,
-	Ativo BOOL NOT NULL
+	Ativo BOOL NOT NULL,
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP
 );
 
 CREATE TABLE TipoResponsavel(--ENUM
@@ -51,7 +54,9 @@ CREATE TABLE Aluno(
 	CPF VARCHAR(14),
 	IdUsuario BIGINT NOT NULL,
 	IdResponsavel BIGINT,
-	Ativo BOOL NOT NULL
+	Ativo BOOL NOT NULL,
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP
 );
 
 CREATE TABLE AlunoEspecialidade(
@@ -70,6 +75,11 @@ CREATE TABLE Disponibilidade(
 	IdDiaSemana INT NOT NULL
 	HorarioInicio TIME NOT NULL,
 	HorarioFim TIME NOT NULL
+);
+
+CREATE TABLE DiaSemana(--ENUM
+	Id INT NOT NULL PRIMARY KEY,
+	Descricao VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE Especialidade(--ENUM
@@ -97,7 +107,9 @@ CREATE TABLE Cliente(
 	Telefone VARCHAR(14),
 	Celular VARCHAR(16),
 	Email VARCHAR(40),
-	IdEndereco BIGINT
+	IdEndereco BIGINT,
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP
 );
 
 CREATE TABLE Endereco(
@@ -115,7 +127,9 @@ CREATE TABLE Grupo(
 	Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	Numero VARCHAR(20),
 	IdEspecialidade INT,
-	Observacoes VARCHAR(1000)
+	Observacoes VARCHAR(1000),
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP
 );
 
 CREATE TABLE Pasta
@@ -130,7 +144,10 @@ CREATE TABLE Pasta
     IdAssunto INT NOT NULL,
 	Concluido BOOL NOT NULL,
 	IdUsuarioCriacao BIGINT NOT NULL,
-	DataHoraCriacao TIMESTAMP NOT NULL
+	DataHoraCriacao TIMESTAMP NOT NULL,
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP,
+	DataHoraAlteracao TIMESTAMP
 );
 
 CREATE TABLE Atendimento(
@@ -208,7 +225,10 @@ CREATE TABLE Processo(
 	Tribunal VARCHAR(80),
 	AnotacoesGerais VARCHAR(5000),
 	IdUsuarioCriacao BIGINT NOT NULL,
-	DataHoraCriacao TIMESTAMP NOT NULL
+	DataHoraCriacao TIMESTAMP NOT NULL,
+	IdUsuarioExclusao BIGINT,
+	DataHoraExclusao TIMESTAMP,
+	DataHoraAlteracao TIMESTAMP
 );
 
 CREATE TABLE dbo.Polo(
@@ -239,6 +259,10 @@ ALTER TABLE Responsavel
 ADD CONSTRAINT FK_ResponsavelTipoResponsavel
 FOREIGN KEY (IdTipoResponsavel) REFERENCES TipoResponsavel (Id);
 
+ALTER TABLE Responsavel 
+ADD CONSTRAINT FK_ResponsavelUsuario2 
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
+
 --Processo--
 ALTER TABLE Processo 
 ADD CONSTRAINT FK_ProcessoPasta
@@ -267,6 +291,10 @@ FOREIGN KEY (IdSituacaoAtendimentoAtual) REFERENCES SituacaoAtendimento (Id);
 ALTER TABLE Processo
 ADD CONSTRAINT FK_ProcessoUsuario
 FOREIGN KEY (IdUsuarioCriacao) REFERENCES Usuario (Id);
+
+ALTER TABLE Processo 
+ADD CONSTRAINT FK_ProcessoUsuario2
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
 
 --Pasta--
 ALTER TABLE Pasta 
@@ -301,20 +329,36 @@ ALTER TABLE Pasta
 ADD CONSTRAINT FK_PastaUsuario2
 FOREIGN KEY (IdUsuarioCriacao) REFERENCES Usuario (Id);
 
+ALTER TABLE Pasta 
+ADD CONSTRAINT FK_PastaUsuario3
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
+
 --Grupo--
 ALTER TABLE Grupo 
 ADD CONSTRAINT FK_GrupoEspecialidade
 FOREIGN KEY (IdEspecialidade) REFERENCES Especialidade (Id);
+
+ALTER TABLE Grupo 
+ADD CONSTRAINT FK_GrupoUsuario
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
 
 --Disponibilidade--
 ALTER TABLE Disponibilidade 
 ADD CONSTRAINT FK_DisponibilidadeAlunoEspecialidade
 FOREIGN KEY (IdAlunoEspecialidade) REFERENCES AlunoEspecialidade (Id) ON DELETE CASCADE;
 
+ALTER TABLE Disponibilidade 
+ADD CONSTRAINT FK_DisponibilidadeDiaSemana
+FOREIGN KEY (IdDiaSemana) REFERENCES DiaSemana (Id);
+
 --Cliente--
 ALTER TABLE Cliente 
 ADD CONSTRAINT FK_ClienteEndereco
 FOREIGN KEY (IdEndereco) REFERENCES Endereco (Id);
+
+ALTER TABLE Cliente 
+ADD CONSTRAINT FK_ClienteUsuario
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
 
 --Atendimento--
 ALTER TABLE Atendimento
@@ -392,3 +436,7 @@ FOREIGN KEY (IdUsuario) REFERENCES Usuario (Id);
 ALTER TABLE Aluno 
 ADD CONSTRAINT FK_AlunoResponsavel 
 FOREIGN KEY (IdResponsavel) REFERENCES Responsavel (Id);
+
+ALTER TABLE Aluno 
+ADD CONSTRAINT FK_AlunoUsuario2 
+FOREIGN KEY (IdUsuarioExclusao) REFERENCES Usuario (Id);
